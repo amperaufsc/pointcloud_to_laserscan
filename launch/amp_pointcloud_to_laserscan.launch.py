@@ -1,20 +1,22 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument as LaunchArg
+from launch.substitutions import LaunchConfiguration as LaunchConfig
 from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
-        DeclareLaunchArgument(
+        LaunchArg(
             name='scanner', default_value='scanner',
             description='Namespace for sample topics'
         ),
+        LaunchArg('cloud_in', default_value=['cloud_in'], description='pointcloud message topic'),
+        LaunchArg('scan', default_value=['scan'], description='laserscan message topic'),
         Node(
             package='pointcloud_to_laserscan',
             executable='pointcloud_to_laserscan_node',
             remappings=[
-                ('cloud_in', 'fsds/lidar/Lidar2'),
-                ('scan', '/scan')
+                ('cloud_in', LaunchConfig('cloud_in')),
+                ('scan', LaunchConfig('scan'))
             ],
             parameters=[{
                 'target_frame': 'fsds/FSCar',
